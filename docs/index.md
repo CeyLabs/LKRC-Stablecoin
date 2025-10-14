@@ -32,6 +32,12 @@ New to LKRC? Start here:
 
 - **[Security Audit Checklist](security/audit-checklist.md)** - Comprehensive security considerations, attack vectors, testing requirements, and audit points
 
+### Use Cases & Personas
+
+- **[Stablecoin Issuer Journey](use-cases/stablecoin-issuer.md)** - Day-to-day operations for entities governing reserves, managing issuance, and enforcing compliance controls
+- **[Bank Integration Playbook](use-cases/bank-integration.md)** - How commercial banks provide fiat on/off ramps and settlement services with LKRC
+- **[Enterprise Treasury Runbook](use-cases/enterprise-treasury.md)** - Corporate treasury workflows for liquidity management, on-chain payments, and risk mitigation
+
 ## Quick Reference
 
 ### Contract Information
@@ -175,8 +181,12 @@ docs/
 │   └── errors.md
 ├── integration/
 │   └── exchanges.md
-└── security/
-    └── audit-checklist.md
+├── security/
+│   └── audit-checklist.md
+└── use-cases/
+    ├── stablecoin-issuer.md
+    ├── bank-integration.md
+    └── enterprise-treasury.md
 ```
 
 ### External Resources
@@ -198,6 +208,7 @@ docs/
 2. **Operators**: Review [Token Lifecycle Operations](operations/token-lifecycle.md) for operational procedures
 3. **Integrators**: Check [Exchange Integration Guide](integration/exchanges.md) for integration patterns
 4. **Auditors**: See [Security Audit Checklist](security/audit-checklist.md) for audit points
+5. **Persona-Specific Guides**: Explore use cases for [Stablecoin Issuers](use-cases/stablecoin-issuer.md), [Banks](use-cases/bank-integration.md), or [Enterprises](use-cases/enterprise-treasury.md)
 
 ---
 
