@@ -79,8 +79,98 @@ function isBlacklisted(address account) public view returns (bool)
 function destroyBlackFunds(address blackListedUser) public onlyOwner
 ```
 
+## Events
+
+The contract emits events for transparency and monitoring purposes. All events are indexed for efficient filtering.
+
+### Core Events
+
+**Transfer**
+```solidity
+event Transfer(address indexed from, address indexed to, uint256 value)
+```
+Emitted when tokens are transferred, including minting (from = 0x0) and burning (to = 0x0).
+- Used by: `transfer()`, `transferFrom()`, `mint()`, `burn()`, `destroyBlackFunds()`
+
+**Approval**
+```solidity
+event Approval(address indexed owner, address indexed spender, uint256 value)
+```
+Emitted when allowance is set via `approve()`.
+- Used by: `approve()`, `transferFrom()` (implicit)
+
+### Blacklist Events
+
+**AddedToBlacklist**
+```solidity
+event AddedToBlacklist(address indexed account)
+```
+Emitted when an address is added to the blacklist.
+- Used by: `addToBlacklist()`, `addToBlacklistBatch()`
+
+**RemovedFromBlacklist**
+```solidity
+event RemovedFromBlacklist(address indexed account)
+```
+Emitted when an address is removed from the blacklist.
+- Used by: `removeFromBlacklist()`, `removeFromBlacklistBatch()`
+
+**DestroyedBlackFunds**
+```solidity
+event DestroyedBlackFunds(address indexed blackListedUser, uint256 balance)
+```
+Emitted when funds from a blacklisted address are destroyed.
+- Used by: `destroyBlackFunds()`
+
+### Operational Events
+
+**Paused**
+```solidity
+event Paused(address account)
+```
+Emitted when the contract is paused.
+- Used by: `pause()`
+
+**Unpaused**
+```solidity
+event Unpaused(address account)
+```
+Emitted when the contract is unpaused.
+- Used by: `unpause()`
+
+**OwnershipTransferred**
+```solidity
+event OwnershipTransferred(address indexed previousOwner, address indexed newOwner)
+```
+Emitted when ownership is transferred.
+- Used by: `transferOwnership()`, `renounceOwnership()`, constructor
+
+### Event Monitoring
+
+Events enable:
+- Real-time compliance monitoring
+- Audit trail for regulatory requirements
+- Integration with off-chain systems
+- Alert systems for operational teams
+- Block explorer transparency
+
+**Example Usage:**
+```javascript
+// Monitor all transfers
+lkrc.on("Transfer", (from, to, amount) => {
+  console.log(`${from} -> ${to}: ${amount}`);
+});
+
+// Monitor blacklist changes
+lkrc.on("AddedToBlacklist", (account) => {
+  console.log(`Blacklisted: ${account}`);
+});
+```
+
 ## Design Considerations
 
 - Batch blacklist operations provide gas-efficient compliance enforcement.
 - Access control is centralized via the owner address; consider multi-signature wallets for production deployment.
 - Reentrancy protection adds a minor gas overhead in exchange for hardened state transitions.
+- All state changes emit events for transparency and monitoring.
+- Indexed event parameters enable efficient filtering and querying.
