@@ -2,12 +2,14 @@
 
 This document details operational workflows and the smart-contract controls that enforce them.
 
+> **⚠️ IMPLEMENTATION STATUS**: The governance processes described below represent the target architecture. Currently, only the core LKRC token contract is implemented with basic mint/burn/pause/blacklist functions. The following contracts are **not yet implemented**: PartnerRegistry, ReserveVault, GovernanceCouncil, MintingController, RiskModule, AuditRegistry, and TreasuryMonitor. Contract function references should be considered design specifications rather than production APIs.
+
 ## Partner Onboarding Workflow
 
 1. **Application Intake** – Partner submits compliance package through secure portal; metadata stored in `PartnerRegistry` contract.
 2. **Due Diligence Review** – Governance Council compliance subcommittee evaluates KYC/AML documentation; status tracked via `PartnerRegistry.setStatus()`.
 3. **Custodian Alignment** – Custodians confirm reserve account readiness and link to `ReserveVault` contract.
-4. **Governance Vote** – Governance Council proposes and executes an onboarding transaction requiring ≥ 67% multi-sig approval in `GovernanceCouncil.executeOnboarding()`.
+4. **Governance Vote** – Governance Council proposes and executes an onboarding transaction requiring ≥ 70% multi-sig approval (7-of-10 signers) in `GovernanceCouncil.executeOnboarding()`.
 5. **Activation Notice** – Partner bank receives activation via messaging queue; `MintingController.authorizePartner()` enables mint/burn requests.
 
 ```mermaid
@@ -35,7 +37,7 @@ flowchart TD
 2. **Automated Limit Check** – Smart contract enforces credit line, velocity caps, and compliance flags before queuing.
 3. **Dual Authorization** – For amounts above the daily threshold, custodian co-signature required using `MintingController.confirmByCustodian()`.
 4. **Governance Oversight** – Governance Council monitors aggregated activity through `TreasuryMonitor` contract alerts; council approval required for exceptional overrides.
-5. **Execution & Settlement** – Upon required signatures, `StablecoinToken.mint()` or `.burn()` executes; custodians update fiat ledgers.
+5. **Execution & Settlement** – Upon required signatures, `LKRC.mint(address to, uint256 amount)` or `LKRC.burn(uint256 amount)` executes; custodians update fiat ledgers.
 
 ```mermaid
 sequenceDiagram
@@ -43,7 +45,7 @@ sequenceDiagram
     participant MC as MintingController
     participant CU as Custodian
     participant GC as Governance Council
-    participant ST as StablecoinToken
+    participant LKRC as LKRC Token
 
     PB->>MC: Submit mint/burn request
     MC->>MC: Validate limits & compliance flags
@@ -52,8 +54,8 @@ sequenceDiagram
         CU-->>MC: Custodian approval
     end
     MC->>GC: Alert for oversight (read-only)
-    MC->>ST: Execute mint/burn
-    ST-->>PB: Tokens / burn confirmation
+    MC->>LKRC: Execute mint/burn
+    LKRC-->>PB: Tokens / burn confirmation
     CU-->>PB: Fiat settlement update
 ```
 
@@ -87,7 +89,7 @@ flowchart LR
 ## Audit Reporting Workflow
 
 1. **Data Collection** – Auditors access read-only ledgers via `AuditRegistry` and off-chain bank statements.
-2. **Reconciliation** – Custodians and partner banks reconcile balances against `ReserveVault` and `StablecoinToken.totalSupply()`.
+2. **Reconciliation** – Custodians and partner banks reconcile balances against `ReserveVault` and `LKRC.totalSupply()`.
 3. **Draft Findings** – Audit team prepares report; discrepancies logged in `AuditRegistry.raiseIssue()` requiring council acknowledgement.
 4. **Governance Review** – Governance Council reviews findings, proposes remediation via `GovernanceCouncil.proposeAction()`.
 5. **Publication** – Final report published to public portal; on-chain hash stored in `AuditRegistry.publishReport()`.
